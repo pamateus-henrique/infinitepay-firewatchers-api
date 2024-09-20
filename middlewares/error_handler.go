@@ -5,6 +5,7 @@ import (
 
     "github.com/gofiber/fiber/v2"
     "github.com/pamateus-henrique/infinitepay-firewatchers-api/validators"
+    customErrors "github.com/pamateus-henrique/infinitepay-firewatchers-api/errors"
 )
 
 func ErrorHandler(c *fiber.Ctx, err error) error {
@@ -30,7 +31,13 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
         })
     }
 
-    // Handle other custom errors here if necessary
+    //check for custom errors
+    if customErr, ok := err.(customErrors.CustomError); ok {
+        code = customErr.StatusCode()
+        message = customErr.Error()
+    }
+
+
 
     // Default error response
     return c.Status(code).JSON(fiber.Map{

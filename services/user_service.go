@@ -2,8 +2,7 @@
 package services
 
 import (
-	"errors"
-
+	customErrors "github.com/pamateus-henrique/infinitepay-firewatchers-api/errors"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/models"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/repositories"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/utils"
@@ -33,7 +32,7 @@ func (s *userService) Register(user *models.Register) error {
     // Check if user already exists
     _, err := s.userRepo.GetUserByEmail(user.Email)
     if err == nil {
-        return errors.New("user already exists")
+        return &customErrors.AuthenticationError{Msg: "user already exists"}
     }
 
     user.Password = utils.GeneratePassword(user.Password)
@@ -51,11 +50,11 @@ func (s *userService) Login(login *models.Login) (*models.User, error) {
     user, err := s.userRepo.GetUserByEmail(login.Email)
 
     if err != nil {
-        return nil, errors.New("invalid email or password")
+        return nil, &customErrors.AuthenticationError{Msg: "Invalid Email or password"}
     }
 
     if err := utils.ComparePassword(login.Password, user.Password); err != nil {
-		return  nil, errors.New("invalid email or password")
+		return nil, &customErrors.AuthenticationError{Msg: "Invalid Email or password"}
 	}
 
 

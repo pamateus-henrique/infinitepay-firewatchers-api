@@ -43,7 +43,7 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 
     user, err := h.userService.Login(loginData)
     if err != nil {
-        return err
+       return err
     }
 
     jwt, err := utils.GenerateJWT(user.Name)
