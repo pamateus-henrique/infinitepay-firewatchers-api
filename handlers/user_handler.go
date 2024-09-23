@@ -4,6 +4,8 @@ package handlers
 import (
 	// "strconv"
 
+	"fmt"
+
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/models"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/services"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/utils"
@@ -22,10 +24,12 @@ func NewUserHandler(userService services.UserService) *UserHandler {
 func (h *UserHandler) Register(c *fiber.Ctx) error {
     user := new(models.Register)
     if err := c.BodyParser(user); err != nil {
+        fmt.Println("body parsed gone wrong")
         return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
     }
 
     if err := h.userService.Register(user); err != nil {
+        fmt.Println("register service gone wrong")
         return err
     }
 

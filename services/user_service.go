@@ -2,6 +2,8 @@
 package services
 
 import (
+	"log"
+
 	customErrors "github.com/pamateus-henrique/infinitepay-firewatchers-api/errors"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/models"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/repositories"
@@ -26,17 +28,17 @@ func NewUserService(userRepo repositories.UserRepository) UserService {
 func (s *userService) Register(user *models.Register) error {
 
     if err := validators.ValidateStruct(user); err != nil {
+        log.Println(err)
         return &validators.ValidationError{Err: err}
     }
 
     // Check if user already exists
     _, err := s.userRepo.GetUserByEmail(user.Email)
     if err == nil {
+        log.Println("User Already Exists")
         return &customErrors.AuthenticationError{Msg: "user already exists"}
     }
-
     user.Password = utils.GeneratePassword(user.Password)
-	
     // Create user
     return s.userRepo.CreateUser(user)
 }

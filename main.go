@@ -27,10 +27,12 @@ func main(){
 
 	//initialize repos
 	userRepo := repositories.NewUserRepository(db)
+	incidentRepo := repositories.NewIncidentRepository(db)
 
 	//initialize services
 	services := &services.Services{
 		UserService: services.NewUserService(userRepo),
+		IncidentService: services.NewIncidentService(incidentRepo),
 	}
 
 	//setup routes

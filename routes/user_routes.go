@@ -13,8 +13,8 @@ func SetupUserRoutes(app *fiber.App, services *services.Services) {
     userHandler := handlers.NewUserHandler(services.UserService)
 
     // Public routes
-    app.Post("/register", userHandler.Register)
-    app.Post("/login", userHandler.Login)
+    app.Post("/api/v1/auth/register", userHandler.Register)
+    app.Post("/api/v1/auth/login", userHandler.Login)
 
     // Protected routes
     // api := app.Group("/api", middlewares.JWTMiddleware())
