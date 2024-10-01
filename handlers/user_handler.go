@@ -58,10 +58,14 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 
 	 // Create cookie
 	 cookie := new(fiber.Cookie)
-	 cookie.Name = "auth"
-	 cookie.Value = jwt
-	 cookie.HTTPOnly = true
-	 c.Cookie(cookie)
+    cookie.Name = "jwt"
+    cookie.Value = jwt
+    cookie.HTTPOnly = true
+    cookie.Secure = false  // Set to true if using HTTPS
+    cookie.SameSite = "Lax"
+    cookie.MaxAge = 3600 * 24  // 24 hours
+    cookie.Path = "/"
+    c.Cookie(cookie)
 
 	 return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"error": false,

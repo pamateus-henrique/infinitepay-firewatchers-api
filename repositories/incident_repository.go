@@ -10,6 +10,7 @@ import (
 
 type IncidentRepository interface {
 	CreateIncident(incident *models.IncidentInput) (int, error)
+	GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error)
 }
 
 type incidentRepository struct {
@@ -128,4 +129,18 @@ func (r *incidentRepository) CreateIncident(incident *models.IncidentInput) (int
 		}
 
 		return incidentID, nil
+}
+
+func (r *incidentRepository) GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error){
+	var incidents []*models.IncidentOverviewOutput
+	
+	query := `SELECT i.id, i.title, t.name as type, i.severity, i.summary, i.status, i.impact_started_at, i.reporter, u.avatar_url FROM incidents as i  LEFT JOIN types as t on t.id = i.type LEFT JOIN users as u on i.lead = u.id`;
+
+	err := r.db.Select(&incidents, query)
+
+	if err != nil {
+		return nil, err
+	};
+
+	return incidents, nil;
 }

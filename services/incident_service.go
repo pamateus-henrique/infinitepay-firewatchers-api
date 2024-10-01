@@ -8,6 +8,7 @@ import (
 
 type IncidentService interface {
 	CreateIncident(incidentInput *models.IncidentInput) (int, error)
+	GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error)
 }
 
 type incidentService struct {
@@ -32,4 +33,16 @@ func (s *incidentService) CreateIncident(incidentInput *models.IncidentInput) (i
 	}
 
 	return incidentID, nil
+}
+
+
+func (s *incidentService) GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error) {
+	
+	incidents, err := s.incidentRepository.GetIncidents(queryParams);
+
+	if err != nil {
+		return nil, err
+	}
+
+	return incidents, err
 }

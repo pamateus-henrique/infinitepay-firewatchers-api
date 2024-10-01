@@ -15,3 +15,21 @@ type IncidentInput struct {
 	ImpactStartedAt *time.Time `json:"started_at" db:"impact_started_at"`
 	SlackThread *string `json:"slack_thread,omitempty" db:"slack_thread"`
 }
+
+type IncidentQueryParams struct {
+		Status   *string `query:"status"`
+		Category *string `query:"category"`
+		Severity *string `query:"severity"`
+}
+
+type IncidentOverviewOutput struct {
+	ID int `json:"id"`
+	Title string `json:"title"`
+	Type string `json:"type"`
+	Severity string `json:"severity"`
+	Summary string `json:"summary"`
+	ImpactStartedAt time.Time `json:"impactStartedAt" db:"impact_started_at"`
+	Status string `json:"status"`
+	Reporter int `json:"reporter"`
+	LeadAvatar string `json:"leadAvatar" db:"avatar_url"`
+}
