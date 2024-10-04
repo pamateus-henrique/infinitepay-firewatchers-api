@@ -2,9 +2,7 @@
 package handlers
 
 import (
-	// "strconv"
-
-	"fmt"
+	"log"
 
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/models"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/services"
@@ -22,16 +20,22 @@ func NewUserHandler(userService services.UserService) *UserHandler {
 }
 
 func (h *UserHandler) Register(c *fiber.Ctx) error {
+    log.Println("Register: Started processing request")
+
     user := new(models.Register)
     if err := c.BodyParser(user); err != nil {
-        fmt.Println("body parsed gone wrong")
+        log.Printf("Register: Error parsing request body: %v", err)
         return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
     }
 
+    log.Printf("Register: Parsed user data: %+v", user)
+
     if err := h.userService.Register(user); err != nil {
-        fmt.Println("register service gone wrong")
+        log.Printf("Register: Error registering user: %v", err)
         return err
     }
+
+    log.Println("Register: User registered successfully")
 
     return c.Status(fiber.StatusCreated).JSON(fiber.Map{
         "message": "User registered successfully",
@@ -39,25 +43,35 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) Login(c *fiber.Ctx) error {
+    log.Println("Login: Started processing request")
+
     loginData := new(models.Login)
 
     if err := c.BodyParser(loginData); err != nil {
+        log.Printf("Login: Error parsing request body: %v", err)
         return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
     }
 
+    log.Printf("Login: Parsed login data: %+v", loginData)
+
     user, err := h.userService.Login(loginData)
     if err != nil {
+       log.Printf("Login: Error during login: %v", err)
        return err
     }
 
+    log.Printf("Login: User logged in successfully: %s", user.Name)
+
     jwt, err := utils.GenerateJWT(user.Name)
+    if err != nil {
+        log.Printf("Login: Error generating JWT: %v", err)
+        return fiber.NewError(fiber.StatusInternalServerError)
+    }
 
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError)
-	}
+    log.Println("Login: JWT generated successfully")
 
-	 // Create cookie
-	 cookie := new(fiber.Cookie)
+    // Create cookie
+    cookie := new(fiber.Cookie)
     cookie.Name = "jwt"
     cookie.Value = jwt
     cookie.HTTPOnly = true
@@ -67,10 +81,12 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
     cookie.Path = "/"
     c.Cookie(cookie)
 
-	 return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"error": false,
-		"msg": "Login successful",
-	})
+    log.Println("Login: Cookie set successfully")
+
+    return c.Status(fiber.StatusOK).JSON(fiber.Map{
+        "error": false,
+        "msg": "Login successful",
+    })
 }
 
 // func (h *UserHandler) GetUser(c *fiber.Ctx) error {

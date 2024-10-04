@@ -14,4 +14,5 @@ func SetupIncidentRoutes(app *fiber.App, services *services.Services) {
     api := app.Group("/api/v1/incidents")
     api.Post("/create", incidentHandler.CreateIncident)
 	api.Get("/", incidentHandler.GetIncidents)
+	api.Get("/:id", incidentHandler.GetSingleIncident)
 }

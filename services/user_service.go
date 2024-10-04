@@ -26,41 +26,57 @@ func NewUserService(userRepo repositories.UserRepository) UserService {
 }
 
 func (s *userService) Register(user *models.Register) error {
+	log.Println("Register: Starting user registration process")
 
-    if err := validators.ValidateStruct(user); err != nil {
-        log.Println(err)
-        return &validators.ValidationError{Err: err}
-    }
+	if err := validators.ValidateStruct(user); err != nil {
+		log.Printf("Register: Validation error: %v", err)
+		return &validators.ValidationError{Err: err}
+	}
 
-    // Check if user already exists
-    _, err := s.userRepo.GetUserByEmail(user.Email)
-    if err == nil {
-        log.Println("User Already Exists")
-        return &customErrors.AuthenticationError{Msg: "user already exists"}
-    }
-    user.Password = utils.GeneratePassword(user.Password)
-    // Create user
-    return s.userRepo.CreateUser(user)
+	log.Println("Register: Checking if user already exists")
+	_, err := s.userRepo.GetUserByEmail(user.Email)
+	if err == nil {
+		log.Println("Register: User already exists")
+		return &customErrors.AuthenticationError{Msg: "user already exists"}
+	}
+
+	log.Println("Register: Generating password hash")
+	user.Password = utils.GeneratePassword(user.Password)
+
+	log.Println("Register: Creating user")
+	err = s.userRepo.CreateUser(user)
+	if err != nil {
+		log.Printf("Register: Error creating user: %v", err)
+	} else {
+		log.Println("Register: User created successfully")
+	}
+	return err
 }
 
 func (s *userService) Login(login *models.Login) (*models.User, error) {
+	log.Println("Login: Starting login process")
 
-    if err := validators.ValidateStruct(login); err != nil {
-        return nil, &validators.ValidationError{Err: err}
-    }
+	if err := validators.ValidateStruct(login); err != nil {
+		log.Printf("Login: Validation error: %v", err)
+		return nil, &validators.ValidationError{Err: err}
+	}
 
-    user, err := s.userRepo.GetUserByEmail(login.Email)
+	log.Println("Login: Retrieving user by email")
+	user, err := s.userRepo.GetUserByEmail(login.Email)
 
-    if err != nil {
-        return nil, &customErrors.AuthenticationError{Msg: "Invalid Email or password"}
-    }
-
-    if err := utils.ComparePassword(login.Password, user.Password); err != nil {
+	if err != nil {
+		log.Println("Login: User not found or error retrieving user")
 		return nil, &customErrors.AuthenticationError{Msg: "Invalid Email or password"}
 	}
 
+	log.Println("Login: Comparing passwords")
+	if err := utils.ComparePassword(login.Password, user.Password); err != nil {
+		log.Println("Login: Password comparison failed")
+		return nil, &customErrors.AuthenticationError{Msg: "Invalid Email or password"}
+	}
 
-    return user, nil
+	log.Println("Login: Login successful")
+	return user, nil
 }
 
 // func (s *userService) GetUser(id int) (*models.User, error) {
