@@ -13,6 +13,7 @@ func SetupIncidentRoutes(app *fiber.App, services *services.Services) {
     // Protected routes
     api := app.Group("/api/v1/incidents")
     api.Post("/create", incidentHandler.CreateIncident)
+	api.Post("/update/summary", incidentHandler.UpdateIncidentSummary)
 	api.Get("/", incidentHandler.GetIncidents)
 	api.Get("/:id", incidentHandler.GetSingleIncident)
 }

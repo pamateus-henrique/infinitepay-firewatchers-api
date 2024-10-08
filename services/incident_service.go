@@ -12,6 +12,7 @@ type IncidentService interface {
 	CreateIncident(incidentInput *models.IncidentInput) (int, error)
 	GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error)
 	GetSingleIncident(incidentID int) (*models.IncidentOutput, error)
+	UpdateIncidentSummary(incidentSummary *models.IncidentSummary) error
 }
 
 type incidentService struct {
@@ -74,4 +75,23 @@ func (s *incidentService) GetSingleIncident(incidentID int) (*models.IncidentOut
 	}
 
 	return incident, err
+}
+
+
+func (s *incidentService) UpdateIncidentSummary(incidentSummary *models.IncidentSummary) error {
+	log.Printf("UpdateIncidentSummary: Starting update process for incident ID %d", incidentSummary.ID)
+
+	if err := validators.ValidateStruct(incidentSummary); err != nil {
+		log.Printf("UpdateIncidentSummary: Validation error: %v", err)
+		return &validators.ValidationError{Err: err}
+	}
+
+	err := s.incidentRepository.UpdateIncidentSummary(incidentSummary)
+	if err != nil {
+		log.Printf("UpdateIncidentSummary: Error updating incident summary: %v", err)
+		return err
+	}
+
+	log.Printf("UpdateIncidentSummary: Successfully updated summary for incident ID %d", incidentSummary.ID)
+	return nil
 }

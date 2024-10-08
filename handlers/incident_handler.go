@@ -81,17 +81,47 @@ func (h *IncidentHandler) GetIncidents(c *fiber.Ctx) error {
 func (h *IncidentHandler) GetSingleIncident(c *fiber.Ctx) error {
 	log.Println("GetSingleIncident: Started processing request")
 
-	incident, err := h.incidentService.GetSingleIncident(90)
+	incidentID, err := c.ParamsInt("id")
+	if err != nil {
+		log.Printf("GetSingleIncident: Invalid incident ID: %v", err)
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid incident ID")
+	}
+
+	incident, err := h.incidentService.GetSingleIncident(incidentID)
 
 	if err != nil {
+		log.Printf("GetSingleIncident: error while retrieving incident: %v", err)
 		return err;
 	}
 
+	log.Printf("GetSingleIncident: retrived sucessfully: %v", incident.ID)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"error": "false",
 		"msg":   "Fetched incident",
 		"data": fiber.Map{
 			"incidents": incident,
 		},
+	})
+}
+
+func (h *IncidentHandler) UpdateIncidentSummary(c *fiber.Ctx) error {
+	log.Println("UpdateIncidentSummary: Started processing request")
+	
+	IncidentSummary := new(models.IncidentSummary)
+
+	if err := c.BodyParser(IncidentSummary); err != nil {
+		log.Printf("UpdateIncidentSummary: Error parsing request body: %v", err)
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
+	}
+
+	if err := h.incidentService.UpdateIncidentSummary(IncidentSummary); err != nil {
+		log.Printf("UpdateIncidentSummary: error while updating incident summary: %v", err)
+		return err;
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": "false",
+		"msg":   "Fetched incident",
+		"data": "",
 	})
 }

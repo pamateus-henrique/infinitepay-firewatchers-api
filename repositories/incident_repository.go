@@ -14,6 +14,7 @@ type IncidentRepository interface {
 	CreateIncident(incident *models.IncidentInput) (int, error)
 	GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error)
 	GetIncidentByID(id int) (*models.IncidentOutput, error)
+	UpdateIncidentSummary(incident *models.IncidentSummary) error
 }
 
 type incidentRepository struct {
@@ -323,5 +324,31 @@ func (r *incidentRepository) getRelatedData(incident *models.IncidentOutput) err
 
     // incident.Events = events
 
+    return nil
+}
+
+func (r *incidentRepository) UpdateIncidentSummary(incident *models.IncidentSummary) error {
+    log.Printf("UpdateIncidentSummary: Updating summary for incident ID %d", incident.ID)
+
+    query := `UPDATE incidents SET summary = $1 WHERE id = $2`
+
+    result, err := r.db.Exec(query, incident.Summary, incident.ID)
+    if err != nil {
+        log.Printf("UpdateIncidentSummary: Error executing update query: %v", err)
+        return err
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        log.Printf("UpdateIncidentSummary: Error getting rows affected: %v", err)
+        return err
+    }
+
+    if rowsAffected == 0 {
+        log.Printf("UpdateIncidentSummary: No rows affected. Incident with ID %d not found", incident.ID)
+        return fmt.Errorf("incident with ID %d not found", incident.ID)
+    }
+
+    log.Printf("UpdateIncidentSummary: Successfully updated summary for incident ID %d", incident.ID)
     return nil
 }
