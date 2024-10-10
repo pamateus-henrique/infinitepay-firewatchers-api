@@ -39,6 +39,17 @@ type IncidentSummary struct {
 	Summary string `json:"summary" db:"summary"`
 }
 
+type IncidentStatus struct {
+	ID      int    `json:"id" db:"id"`
+	Status string `json:"status" db:"status"`
+}
+
+type IncidentSeverity struct {
+	ID      int    `json:"id" db:"id"`
+	Severity string `json:"severity" db:"severity"`
+}
+
+
 type IncidentOutput struct {
 	ID                    int               `json:"id" db:"id"`
 	Reference             *int              `json:"reference" db:"reference"`

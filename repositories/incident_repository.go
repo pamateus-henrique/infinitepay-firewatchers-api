@@ -15,6 +15,8 @@ type IncidentRepository interface {
 	GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error)
 	GetIncidentByID(id int) (*models.IncidentOutput, error)
 	UpdateIncidentSummary(incident *models.IncidentSummary) error
+	UpdateIncidentStatus(incident *models.IncidentStatus) error
+	UpdateIncidentSeverity(incident *models.IncidentSeverity) error
 }
 
 type incidentRepository struct {
@@ -350,5 +352,58 @@ func (r *incidentRepository) UpdateIncidentSummary(incident *models.IncidentSumm
     }
 
     log.Printf("UpdateIncidentSummary: Successfully updated summary for incident ID %d", incident.ID)
+    return nil
+}
+
+func (r *incidentRepository) UpdateIncidentStatus(incident *models.IncidentStatus) error {
+    log.Printf("UpdateIncidentStatus: Updating summary for incident ID %d", incident.ID)
+
+    query := `UPDATE incidents SET status = $1 WHERE id = $2`
+
+    result, err := r.db.Exec(query, incident.Status, incident.ID)
+    if err != nil {
+        log.Printf("UpdateIncidentStatus: Error executing update query: %v", err)
+        return err
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        log.Printf("UpdateIncidentStatus: Error getting rows affected: %v", err)
+        return err
+    }
+
+    if rowsAffected == 0 {
+        log.Printf("UpdateIncidentStatus: No rows affected. Incident with ID %d not found", incident.ID)
+        return fmt.Errorf("incident with ID %d not found", incident.ID)
+    }
+
+    log.Printf("UpdateIncidentStatus: Successfully updated status for incident ID %d", incident.ID)
+    return nil
+}
+
+
+func (r *incidentRepository) UpdateIncidentSeverity(incident *models.IncidentSeverity) error {
+    log.Printf("UpdateIncidentSeverity: Updating severity for incident ID %d", incident.ID)
+
+    query := `UPDATE incidents SET severity = $1 WHERE id = $2`
+
+    result, err := r.db.Exec(query, incident.Severity, incident.ID)
+    if err != nil {
+        log.Printf("UpdateIncidentSeverity: Error executing update query: %v", err)
+        return err
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        log.Printf("UpdateIncidentSeverity: Error getting rows affected: %v", err)
+        return err
+    }
+
+    if rowsAffected == 0 {
+        log.Printf("UpdateIncidentSeverity: No rows affected. Incident with ID %d not found", incident.ID)
+        return fmt.Errorf("incident with ID %d not found", incident.ID)
+    }
+
+    log.Printf("UpdateIncidentSeverity: Successfully updated severity for incident ID %d", incident.ID)
     return nil
 }

@@ -121,7 +121,52 @@ func (h *IncidentHandler) UpdateIncidentSummary(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"error": "false",
-		"msg":   "Fetched incident",
+		"msg":   "Updated incident summary",
 		"data": "",
+	})
+}
+
+
+func (h *IncidentHandler) UpdateIncidentStatus(c *fiber.Ctx) error {
+	log.Println("UpdateIncidentStatus: Started processing request")
+	
+	IncidentStatus := new(models.IncidentStatus)
+
+	if err := c.BodyParser(IncidentStatus); err != nil {
+		log.Printf("UpdateIncidentStatus: Error parsing request body: %v", err)
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
+	}
+
+	if err := h.incidentService.UpdateIncidentStatus(IncidentStatus); err != nil {
+		log.Printf("UpdateIncidentStatus: error while updating incident summary: %v", err)
+		return err;
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": "false",
+		"msg":   "Updated incident status",
+		"data": "",
+	})
+}
+
+func (h *IncidentHandler) UpdateIncidentSeverity(c *fiber.Ctx) error {
+	log.Println("UpdateIncidentSeverity: Started processing request")
+	
+	incidentSeverity := new(models.IncidentSeverity)
+
+	if err := c.BodyParser(incidentSeverity); err != nil {
+		log.Printf("UpdateIncidentSeverity: Error parsing request body: %v", err)
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
+	}
+
+	if err := h.incidentService.UpdateIncidentSeverity(incidentSeverity); err != nil {
+		log.Printf("UpdateIncidentSeverity: error while updating incident severity: %v", err)
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": "false",
+		"msg":   "Updated incident severity",
+		"data":  "",
 	})
 }

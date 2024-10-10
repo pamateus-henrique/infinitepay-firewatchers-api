@@ -13,6 +13,8 @@ type IncidentService interface {
 	GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error)
 	GetSingleIncident(incidentID int) (*models.IncidentOutput, error)
 	UpdateIncidentSummary(incidentSummary *models.IncidentSummary) error
+	UpdateIncidentStatus(IncidentStatus *models.IncidentStatus) error
+	UpdateIncidentSeverity(incidentSeverity *models.IncidentSeverity) error
 }
 
 type incidentService struct {
@@ -93,5 +95,42 @@ func (s *incidentService) UpdateIncidentSummary(incidentSummary *models.Incident
 	}
 
 	log.Printf("UpdateIncidentSummary: Successfully updated summary for incident ID %d", incidentSummary.ID)
+	return nil
+}
+
+
+func (s *incidentService) UpdateIncidentStatus(IncidentStatus *models.IncidentStatus) error {
+	log.Printf("UpdateIncidentStatus: Starting update process for incident ID %d", IncidentStatus.ID)
+
+	if err := validators.ValidateStruct(IncidentStatus); err != nil {
+		log.Printf("UpdateIncidentStatus: Validation error: %v", err)
+		return &validators.ValidationError{Err: err}
+	}
+
+	err := s.incidentRepository.UpdateIncidentStatus(IncidentStatus)
+	if err != nil {
+		log.Printf("UpdateIncidentSummary: Error updating incident summary: %v", err)
+		return err
+	}
+
+	log.Printf("UpdateIncidentSummary: Successfully updated summary for incident ID %d", IncidentStatus.ID)
+	return nil
+}
+
+func (s *incidentService) UpdateIncidentSeverity(incidentSeverity *models.IncidentSeverity) error {
+	log.Printf("UpdateIncidentSeverity: Starting update process for incident ID %d", incidentSeverity.ID)
+
+	if err := validators.ValidateStruct(incidentSeverity); err != nil {
+		log.Printf("UpdateIncidentSeverity: Validation error: %v", err)
+		return &validators.ValidationError{Err: err}
+	}
+
+	err := s.incidentRepository.UpdateIncidentSeverity(incidentSeverity)
+	if err != nil {
+		log.Printf("UpdateIncidentSeverity: Error updating incident severity: %v", err)
+		return err
+	}
+
+	log.Printf("UpdateIncidentSeverity: Successfully updated severity for incident ID %d", incidentSeverity.ID)
 	return nil
 }
