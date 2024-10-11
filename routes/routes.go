@@ -10,5 +10,6 @@ func SetupRoutes(app *fiber.App, services *services.Services) {
     // Setup user routes
     SetupUserRoutes(app, services)
     SetupIncidentRoutes(app, services)
+    SetupOptionsRoutes(app,services)
     // Setup more routes here (e.g., product routes)
 }

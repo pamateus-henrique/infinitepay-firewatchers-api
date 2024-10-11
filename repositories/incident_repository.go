@@ -149,7 +149,7 @@ func (r *incidentRepository) CreateIncident(incident *models.IncidentInput) (int
 func (r *incidentRepository) GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error) {
 	log.Println("GetIncidents: Starting query construction")
 	
-	query := `SELECT i.id, i.title, t.name as type, i.severity, i.summary, i.status, i.impact_started_at, u.name as lead, u.avatar_url FROM incidents as i  LEFT JOIN types as t on t.id = i.type LEFT JOIN users as u on i.lead = u.id WHERE 1=1 `
+	query := `SELECT i.id, i.title, i.type, i.severity, i.summary, i.status, i.impact_started_at, u.name as lead, u.avatar_url FROM incidents as i LEFT JOIN users as u on i.lead = u.id WHERE 1=1 `
 
 	params := make(map[string]interface{})
 

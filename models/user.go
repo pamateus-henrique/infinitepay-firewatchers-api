@@ -8,3 +8,10 @@ type User struct {
 	Role string `db:"role" json:"role" validate:"required"`
 	Avatar_url string `db:"avatar_url" json:"avatar_url" validate:"required"`
 }
+
+
+type UserPublicData struct {
+	ID     int    `json:"id" db:"id"`
+	Name   string `json:"name" db:"name"`
+	Avatar string `json:"avatar" db:"avatar_url"`
+}
