@@ -109,11 +109,11 @@ func (s *incidentService) UpdateIncidentStatus(IncidentStatus *models.IncidentSt
 
 	err := s.incidentRepository.UpdateIncidentStatus(IncidentStatus)
 	if err != nil {
-		log.Printf("UpdateIncidentSummary: Error updating incident summary: %v", err)
+		log.Printf("UpdateIncidentSummary: Error updating incident status: %v", err)
 		return err
 	}
 
-	log.Printf("UpdateIncidentSummary: Successfully updated summary for incident ID %d", IncidentStatus.ID)
+	log.Printf("UpdateIncidentSummary: Successfully updated status for incident ID %d", IncidentStatus.ID)
 	return nil
 }
 

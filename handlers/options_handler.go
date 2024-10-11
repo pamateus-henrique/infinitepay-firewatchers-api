@@ -27,10 +27,10 @@ func (h *OptionsHandler) GetTypes(c *fiber.Ctx) error {
 	log.Printf("GetTypes: Successfully fetched %d types", len(types))
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"error": false,
+		"error": "false",
 		"msg":   "Fetched types",
 		"data": fiber.Map{
-			"types": types,
+			"type": types,
 		},
 	})
 }
