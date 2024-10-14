@@ -17,6 +17,7 @@ type IncidentRepository interface {
 	UpdateIncidentSummary(incident *models.IncidentSummary) error
 	UpdateIncidentStatus(incident *models.IncidentStatus) error
 	UpdateIncidentSeverity(incident *models.IncidentSeverity) error
+	UpdateIncidentType(incident *models.IncidentType) error
 }
 
 type incidentRepository struct {
@@ -405,5 +406,31 @@ func (r *incidentRepository) UpdateIncidentSeverity(incident *models.IncidentSev
     }
 
     log.Printf("UpdateIncidentSeverity: Successfully updated severity for incident ID %d", incident.ID)
+    return nil
+}
+
+func (r *incidentRepository) UpdateIncidentType(incident *models.IncidentType) error {
+    log.Printf("UpdateIncidentType: Updating type for incident ID %d", incident.ID)
+
+    query := `UPDATE incidents SET type = $1 WHERE id = $2`
+
+    result, err := r.db.Exec(query, incident.Type, incident.ID)
+    if err != nil {
+        log.Printf("UpdateIncidentType: Error executing update query: %v", err)
+        return err
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        log.Printf("UpdateIncidentType: Error getting rows affected: %v", err)
+        return err
+    }
+
+    if rowsAffected == 0 {
+        log.Printf("UpdateIncidentType: No rows affected. Incident with ID %d not found", incident.ID)
+        return fmt.Errorf("incident with ID %d not found", incident.ID)
+    }
+
+    log.Printf("UpdateIncidentType: Successfully updated type for incident ID %d", incident.ID)
     return nil
 }

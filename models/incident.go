@@ -49,6 +49,11 @@ type IncidentSeverity struct {
 	Severity string `json:"severity" db:"severity"`
 }
 
+type IncidentType struct {
+	ID      int    `json:"id" db:"id"`
+	Type 	string `json:"type" db:"type"`
+}
+
 type IncidentOutput struct {
 	ID                    int               `json:"id" db:"id"`
 	Reference             *int              `json:"reference" db:"reference"`

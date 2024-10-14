@@ -170,3 +170,25 @@ func (h *IncidentHandler) UpdateIncidentSeverity(c *fiber.Ctx) error {
 		"data":  "",
 	})
 }
+
+func (h *IncidentHandler) UpdateIncidentType(c *fiber.Ctx) error {
+	log.Println("UpdateIncidentType: Started processing request")
+	
+	incidentType := new(models.IncidentType)
+
+	if err := c.BodyParser(incidentType); err != nil {
+		log.Printf("UpdateIncidentSeverity: Error parsing request body: %v", err)
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
+	}
+
+	if err := h.incidentService.UpdateIncidentType(incidentType); err != nil {
+		log.Printf("UpdateIncidentType: error while updating incident type: %v", err)
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": "false",
+		"msg":   "Updated incident type",
+		"data":  "",
+	})
+}

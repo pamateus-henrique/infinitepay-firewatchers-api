@@ -16,6 +16,7 @@ func SetupIncidentRoutes(app *fiber.App, services *services.Services) {
 	api.Post("/update/summary", incidentHandler.UpdateIncidentSummary)
 	api.Post("/update/status", incidentHandler.UpdateIncidentStatus)
 	api.Post("/update/severity", incidentHandler.UpdateIncidentSeverity)
+	api.Post("/update/type", incidentHandler.UpdateIncidentType)
 	api.Get("/", incidentHandler.GetIncidents)
 	api.Get("/:id", incidentHandler.GetSingleIncident)
 }

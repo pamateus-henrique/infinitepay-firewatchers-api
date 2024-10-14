@@ -12,4 +12,7 @@ func SetupOptionsRoutes(app *fiber.App, services *services.Services) {
     // Protected routes
     api := app.Group("/api/v1/options")
     api.Get("/types", optionsHandler.GetTypes)
+	api.Get("/status", optionsHandler.GetStatuses)
+	api.Get("/severity", optionsHandler.GetSeverities)
+
 }

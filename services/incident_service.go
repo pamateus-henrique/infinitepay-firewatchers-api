@@ -15,6 +15,7 @@ type IncidentService interface {
 	UpdateIncidentSummary(incidentSummary *models.IncidentSummary) error
 	UpdateIncidentStatus(IncidentStatus *models.IncidentStatus) error
 	UpdateIncidentSeverity(incidentSeverity *models.IncidentSeverity) error
+	UpdateIncidentType(incidentType *models.IncidentType) error
 }
 
 type incidentService struct {
@@ -132,5 +133,23 @@ func (s *incidentService) UpdateIncidentSeverity(incidentSeverity *models.Incide
 	}
 
 	log.Printf("UpdateIncidentSeverity: Successfully updated severity for incident ID %d", incidentSeverity.ID)
+	return nil
+}
+
+func (s *incidentService) UpdateIncidentType(incidentType *models.IncidentType) error {
+	log.Printf("UpdateIncidentType: Updating type for incident ID %v", incidentType)
+
+	if err := validators.ValidateStruct(incidentType); err != nil {
+		log.Printf("UpdateIncidentType: Validation error: %v", err)
+		return &validators.ValidationError{Err: err}
+	}
+
+	err := s.incidentRepository.UpdateIncidentType(incidentType)
+	if err != nil {
+		log.Printf("UpdateIncidentType: Error updating incident type: %v", err)
+		return err
+	}
+
+	log.Printf("UpdateIncidentType: Successfully updated type for incident ID %d", incidentType.ID)
 	return nil
 }

@@ -8,6 +8,8 @@ import (
 
 type OptionsService interface {
 	GetTypes() ([]*models.Type, error)
+	GetStatuses() ([]*models.Status, error)
+	GetSeverities() ([]*models.Severity, error)
 }
 
 type optionsService struct {
@@ -29,4 +31,30 @@ func (s *optionsService) GetTypes() ([]*models.Type, error) {
 
 	log.Printf("GetTypes: Successfully retrieved %d types", len(types))
 	return types, nil
+}
+
+func (s *optionsService) GetStatuses() ([]*models.Status, error) {
+	log.Println("GetStatuses: Starting statuses retrieval process")
+
+	statuses, err := s.optionsRepository.GetStatuses()
+	if err != nil {
+		log.Printf("GetStatuses: Error retrieving statuses: %v", err)
+		return nil, err
+	}
+
+	log.Printf("GetStatuses: Successfully retrieved %d statuses", len(statuses))
+	return statuses, nil
+}
+
+func (s *optionsService) GetSeverities() ([]*models.Severity, error) {
+	log.Println("GetSeverities: Starting severities retrieval process")
+
+	severities, err := s.optionsRepository.GetSeverities()
+	if err != nil {
+		log.Printf("GetSeverities: Error retrieving severities: %v", err)
+		return nil, err
+	}
+
+	log.Printf("GetSeverities: Successfully retrieved %d severities", len(severities))
+	return severities, nil
 }
