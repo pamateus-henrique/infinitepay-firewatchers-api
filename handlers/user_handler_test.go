@@ -25,12 +25,16 @@ type MockUserService struct {
 func (m *MockUserService) Register(user *models.Register) error {
 	args := m.Called(user)
 	return args.Error(0)
-
 }
 
 func (m *MockUserService) Login(login *models.Login) (*models.User, error) {
 	args := m.Called(login)
 	return args.Get(0).(*models.User), args.Error(1)
+}
+
+func (m *MockUserService) GetAllUsersPublicData() ([]*models.UserPublicData, error) {
+	args := m.Called()
+	return args.Get(0).([]*models.UserPublicData), args.Error(1)
 }
 
 func TestRegister(t *testing.T) {
@@ -167,6 +171,78 @@ func TestLogin(t *testing.T) {
 			// Create request
 			req := httptest.NewRequest(http.MethodPost, "/login", bytes.NewBufferString(tt.inputJSON))
 			req.Header.Set("Content-Type", "application/json")
+
+			// Perform request
+			resp, err := app.Test(req)
+			assert.NoError(t, err)
+
+			// Check status code
+			assert.Equal(t, tt.expectedStatus, resp.StatusCode)
+
+			// Check response body
+			body, _ := io.ReadAll(resp.Body)
+			assert.JSONEq(t, tt.expectedBody, string(body))
+
+			// Assert that mock expectations were met
+			mockService.AssertExpectations(t)
+		})
+	}
+}
+
+func TestGetAllUsersPublicData(t *testing.T) {
+	app := fiber.New(fiber.Config{
+		ErrorHandler: middlewares.ErrorHandler,
+	})
+	mockService := new(MockUserService)
+	handler := NewUserHandler(mockService)
+
+	app.Get("/users/public", handler.GetAllUsersPublicData)
+
+	tests := []struct {
+		name           string
+		mockBehavior   func()
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name: "Successful Retrieval",
+			mockBehavior: func() {
+				mockService.On("GetAllUsersPublicData").Return([]*models.UserPublicData{
+					{ID: 1, Name: "John Doe", Avatar: "avatar1.jpg"},
+					{ID: 2, Name: "Jane Smith", Avatar: "avatar2.jpg"},
+				}, nil)
+			},
+			expectedStatus: http.StatusOK,
+			expectedBody: `{
+				"error": false,
+				"msg": "Users' public data retrieved successfully",
+				"data": [
+					{"id": 1, "name": "John Doe", "avatar": "avatar1.jpg"},
+					{"id": 2, "name": "Jane Smith", "avatar": "avatar2.jpg"}
+				]
+			}`,
+		},
+		{
+			name: "Internal Server Error",
+			mockBehavior: func() {
+				mockService.On("GetAllUsersPublicData").Return([]*models.UserPublicData(nil), errors.New("database error"))
+			},
+			expectedStatus: http.StatusInternalServerError,
+			expectedBody:   `{"error":true,"message":"Error retrieving users' data"}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Reset mock
+			mockService.ExpectedCalls = nil
+			mockService.Calls = nil
+
+			// Set up mock behavior
+			tt.mockBehavior()
+
+			// Create request
+			req := httptest.NewRequest(http.MethodGet, "/users/public", nil)
 
 			// Perform request
 			resp, err := app.Test(req)

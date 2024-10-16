@@ -192,3 +192,25 @@ func (h *IncidentHandler) UpdateIncidentType(c *fiber.Ctx) error {
 		"data":  "",
 	})
 }
+
+func (h *IncidentHandler) UpdateIncidentRoles(c *fiber.Ctx) error {
+	log.Println("UpdateIncidentRoles: Started processing request")
+	
+	incidentRoles := new(models.IncidentRoles)
+
+	if err := c.BodyParser(incidentRoles); err != nil {
+		log.Printf("UpdateIncidentRoles: Error parsing request body: %v", err)
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
+	}
+
+	if err := h.incidentService.UpdateIncidentRoles(incidentRoles); err != nil {
+		log.Printf("UpdateIncidentRoles: error while updating incident roles: %v", err)
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": "false",
+		"msg":   "Updated incident roles",
+		"data":  "",
+	})
+}

@@ -12,17 +12,17 @@ import (
 )
 
 type UserService interface {
-    Register(user *models.Register) error
-    Login(login *models.Login) (*models.User, error)
-    // GetUser(id int) (*models.User, error)
+	Register(user *models.Register) error
+	Login(login *models.Login) (*models.User, error)
+	GetAllUsersPublicData() ([]*models.UserPublicData, error)
 }
 
 type userService struct {
-    userRepo repositories.UserRepository
+	userRepo repositories.UserRepository
 }
 
 func NewUserService(userRepo repositories.UserRepository) UserService {
-    return &userService{userRepo: userRepo}
+	return &userService{userRepo: userRepo}
 }
 
 func (s *userService) Register(user *models.Register) error {
@@ -79,7 +79,15 @@ func (s *userService) Login(login *models.Login) (*models.User, error) {
 	return user, nil
 }
 
-// func (s *userService) GetUser(id int) (*models.User, error) {
-//     return s.userRepo.GetUserByID(id)
+func (s *userService) GetAllUsersPublicData() ([]*models.UserPublicData, error) {
+	log.Println("GetAllUsersPublicData: Starting retrieval of all users' public data")
 
-// }
+	users, err := s.userRepo.GetAllUsersPublicData()
+	if err != nil {
+		log.Printf("GetAllUsersPublicData: Error retrieving users' public data: %v", err)
+		return nil, err
+	}
+
+	log.Printf("GetAllUsersPublicData: Successfully retrieved public data for %d users", len(users))
+	return users, nil
+}

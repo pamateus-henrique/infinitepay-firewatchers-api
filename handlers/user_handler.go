@@ -107,3 +107,23 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 
 //     return c.JSON(user)
 // }
+
+func (h *UserHandler) GetAllUsersPublicData(c *fiber.Ctx) error {
+    log.Println("GetAllUsersPublicData: Started processing request")
+
+    users, err := h.userService.GetAllUsersPublicData()
+    if err != nil {
+        log.Printf("GetAllUsersPublicData: Error retrieving users' public data: %v", err)
+        return fiber.NewError(fiber.StatusInternalServerError, "Error retrieving users' data")
+    }
+
+    log.Printf("GetAllUsersPublicData: Successfully retrieved public data for %d users", len(users))
+
+    return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": false,
+		"msg":   "Fetched severities",
+		"data": fiber.Map{
+			"users": users,
+		},
+	})
+}

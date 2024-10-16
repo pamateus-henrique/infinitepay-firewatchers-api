@@ -11,6 +11,7 @@ import (
 type UserRepository interface {
 	CreateUser(user *models.Register) error
 	GetUserByEmail(email string) (*models.User, error)
+	GetAllUsersPublicData() ([]*models.UserPublicData, error)
 }
 
 type userRepository struct {
@@ -53,4 +54,36 @@ func (r *userRepository) GetUserByEmail(email string) (*models.User, error) {
 	log.Println("GetUserByEmail: User retrieved successfully")
 	return &user, nil
 
+}
+
+func (r *userRepository) GetAllUsersPublicData() ([]*models.UserPublicData, error) {
+	log.Println("GetAllUsersPublicData: Starting retrieval of all users' public data")
+
+	query := `SELECT id, name, avatar_url FROM users`
+
+	rows, err := r.db.Queryx(query)
+	if err != nil {
+		log.Printf("GetAllUsersPublicData: Error executing query: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*models.UserPublicData
+
+	for rows.Next() {
+		var user models.UserPublicData
+		if err := rows.StructScan(&user); err != nil {
+			log.Printf("GetAllUsersPublicData: Error scanning row: %v", err)
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Printf("GetAllUsersPublicData: Error after scanning all rows: %v", err)
+		return nil, err
+	}
+
+	log.Printf("GetAllUsersPublicData: Successfully retrieved public data for %d users", len(users))
+	return users, nil
 }

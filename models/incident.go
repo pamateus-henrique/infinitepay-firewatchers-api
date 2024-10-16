@@ -54,6 +54,12 @@ type IncidentType struct {
 	Type 	string `json:"type" db:"type"`
 }
 
+type IncidentRoles struct {
+	ID      int		`json:"id" db:"id"`
+	Lead                  *int              `json:"lead" db:"lead"`
+	QE                    *int              `json:"qe" db:"qe"`
+}
+
 type IncidentOutput struct {
 	ID                    int               `json:"id" db:"id"`
 	Reference             *int              `json:"reference" db:"reference"`
@@ -64,7 +70,7 @@ type IncidentOutput struct {
 	QE                    *int              `json:"qe" db:"qe"`
 	ReporterName          string            `json:"reporterName" db:"reporter_name"`
 	LeadName              *string           `json:"leadName" db:"lead_name"`
-	QeName                *string           `json:"qeName" db:"qe_name"`
+	QeName                *string           `json:"QEName" db:"qe_name"`
 	ReporterAvatar        string            `json:"reporterAvatar" db:"reporter_avatar"`
 	LeadAvatar            *string           `json:"leadAvatar" db:"lead_avatar"`
 	QEAvatar              *string           `json:"QEAvatar" db:"qe_avatar"`

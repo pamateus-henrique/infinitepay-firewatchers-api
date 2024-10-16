@@ -18,6 +18,7 @@ type IncidentRepository interface {
 	UpdateIncidentStatus(incident *models.IncidentStatus) error
 	UpdateIncidentSeverity(incident *models.IncidentSeverity) error
 	UpdateIncidentType(incident *models.IncidentType) error
+	UpdateIncidentRoles(incident *models.IncidentRoles) error
 }
 
 type incidentRepository struct {
@@ -432,5 +433,66 @@ func (r *incidentRepository) UpdateIncidentType(incident *models.IncidentType) e
     }
 
     log.Printf("UpdateIncidentType: Successfully updated type for incident ID %d", incident.ID)
+    return nil
+}
+
+func (r *incidentRepository) UpdateIncidentRoles(incident *models.IncidentRoles) error {
+    if incident == nil {
+        return fmt.Errorf("UpdateIncidentRoles: incident cannot be nil")
+    }
+    if incident.ID == 0 {
+        return fmt.Errorf("UpdateIncidentRoles: incident ID cannot be 0")
+    }
+
+    log.Printf("UpdateIncidentRoles: Updating roles for incident ID %d", incident.ID)
+
+    // Start building the query
+    query := "UPDATE incidents SET "
+    var args []interface{}
+    var setFields []string
+
+    // Check if Lead is provided
+    if incident.Lead != nil {
+        setFields = append(setFields, "lead = ?")
+        args = append(args, *incident.Lead)
+    }
+
+    // Check if QE is provided
+    if incident.QE != nil {
+        setFields = append(setFields, "qe = ?")
+        args = append(args, *incident.QE)
+    }
+
+    // If no fields to update, return early
+    if len(setFields) == 0 {
+        log.Printf("UpdateIncidentRoles: No fields to update for incident ID %d", incident.ID)
+        return nil
+    }
+
+    // Complete the query
+    query += strings.Join(setFields, ", ")
+    query += " WHERE id = ?"
+    args = append(args, incident.ID)
+
+    // Use sqlx for easier query building
+    query = r.db.Rebind(query)
+    result, err := r.db.Exec(query, args...)
+    if err != nil {
+        log.Printf("UpdateIncidentRoles: Error executing update query: %v", err)
+        return err
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        log.Printf("UpdateIncidentRoles: Error getting rows affected: %v", err)
+        return err
+    }
+
+    if rowsAffected == 0 {
+        log.Printf("UpdateIncidentRoles: No rows affected. Incident with ID %d not found", incident.ID)
+        return fmt.Errorf("incident with ID %d not found", incident.ID)
+    }
+
+    log.Printf("UpdateIncidentRoles: Successfully updated roles for incident ID %d", incident.ID)
     return nil
 }
