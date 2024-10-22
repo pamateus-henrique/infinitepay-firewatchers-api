@@ -12,6 +12,7 @@ type OptionsRepository interface {
 	GetTypes() ([]*models.Type, error)
 	GetStatuses() ([]*models.Status, error)
 	GetSeverities() ([]*models.Severity, error)
+	GetProducts() ([]*models.Product, error)
 }
 
 type optionsRepository struct {
@@ -102,4 +103,31 @@ func (r *optionsRepository) GetSeverities() ([]*models.Severity, error) {
 	}
 
 	return severities, nil
+}
+
+func (r *optionsRepository) GetProducts() ([]*models.Product, error) {
+	query := "SELECT id, name FROM products WHERE active = true"
+
+	rows, err := r.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []*models.Product
+
+	for rows.Next() {
+		var product models.Product
+		if err := rows.StructScan(&product); err != nil {
+			return nil, err
+		}
+		products = append(products, &product)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Printf("GetProducts: Error after scanning all rows: %v", err)
+		return nil, err
+	}
+
+	return products, nil
 }

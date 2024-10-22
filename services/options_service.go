@@ -10,6 +10,7 @@ type OptionsService interface {
 	GetTypes() ([]*models.Type, error)
 	GetStatuses() ([]*models.Status, error)
 	GetSeverities() ([]*models.Severity, error)
+	GetProducts() ([]*models.Product, error)
 }
 
 type optionsService struct {
@@ -57,4 +58,17 @@ func (s *optionsService) GetSeverities() ([]*models.Severity, error) {
 
 	log.Printf("GetSeverities: Successfully retrieved %d severities", len(severities))
 	return severities, nil
+}
+
+func (s *optionsService) GetProducts() ([]*models.Product, error) {
+	log.Println("GetProducts: Starting products retrieval process")
+
+	products, err := s.optionsRepository.GetProducts()
+	if err != nil {
+		log.Printf("GetProducts: Error retrieving products: %v", err)
+		return nil, err
+	}
+
+	log.Printf("GetProducts: Successfully retrieved %d products", len(products))
+	return products, nil
 }

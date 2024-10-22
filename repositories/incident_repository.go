@@ -238,99 +238,6 @@ func (r *incidentRepository) GetIncidentByID(id int) (*models.IncidentOutput, er
     return incidentOutput, nil
 }
 
-func (r *incidentRepository) getRelatedData(incident *models.IncidentOutput) error {
-    relatedTables := []struct {
-        query    string
-        dest     interface{}
-    }{
-        {
-            query: `SELECT p.id, p.name 
-                    FROM incident_products ip 
-                    JOIN products p ON ip.product_id = p.id 
-                    WHERE ip.incident_id = $1`,
-            dest: &incident.Products,
-        },
-        {
-            query: `SELECT a.id, a.name 
-                    FROM incident_areas ia 
-                    JOIN areas a ON ia.area_id = a.id 
-                    WHERE ia.incident_id = $1`,
-            dest: &incident.Areas,
-        },
-        {
-            query: `SELECT c.id, c.name 
-                    FROM incident_causes ic 
-                    JOIN causes c ON ic.cause_id = c.id 
-                    WHERE ic.incident_id = $1`,
-            dest: &incident.Causes,
-        },
-        {
-            query: `SELECT fs.id, fs.name 
-                    FROM incident_faulty_systems ifs 
-                    JOIN faulty_systems fs ON ifs.faulty_system_id = fs.id 
-                    WHERE ifs.incident_id = $1`,
-            dest: &incident.FaultySystems,
-        },
-        {
-            query: `SELECT pi.id, pi.name 
-                    FROM incident_performance_indicators ipi 
-                    JOIN performance_indicators pi ON ipi.performance_indicator_id = pi.id 
-                    WHERE ipi.incident_id = $1`,
-            dest: &incident.PerformanceIndicators,
-        },
-    }
-
-    for _, table := range relatedTables {
-        rows, err := r.db.Query(table.query, incident.ID)
-        if err != nil {
-            return fmt.Errorf("error querying related data: %v", err)
-        }
-        defer rows.Close()
-
-        relatedMap := make(map[int]string)
-        for rows.Next() {
-            var id int
-            var name string
-            if err := rows.Scan(&id, &name); err != nil {
-                return fmt.Errorf("error scanning related data: %v", err)
-            }
-            relatedMap[id] = name
-        }
-
-        if err = rows.Err(); err != nil {
-            return fmt.Errorf("error after scanning all related data: %v", err)
-        }
-
-        // Use reflection to set the map field in the struct
-        reflect.ValueOf(table.dest).Elem().Set(reflect.ValueOf(relatedMap))
-    }
-
-    // Handle events separately as they don't have IDs
-    // eventsQuery := `SELECT event FROM incident_events WHERE incident_id = $1`
-    // rows, err := r.db.Query(eventsQuery, incident.ID)
-    // if err != nil {
-    //     return fmt.Errorf("error querying events: %v", err)
-    // }
-    // defer rows.Close()
-
-    // var events []string
-    // for rows.Next() {
-    //     var event string
-    //     if err := rows.Scan(&event); err != nil {
-    //         return fmt.Errorf("error scanning event: %v", err)
-    //     }
-    //     events = append(events, event)
-    // }
-
-    // if err = rows.Err(); err != nil {
-    //     return fmt.Errorf("error after scanning all events: %v", err)
-    // }
-
-    // incident.Events = events
-
-    return nil
-}
-
 func (r *incidentRepository) UpdateIncidentSummary(incident *models.IncidentSummary) error {
     log.Printf("UpdateIncidentSummary: Updating summary for incident ID %d", incident.ID)
 
@@ -496,3 +403,74 @@ func (r *incidentRepository) UpdateIncidentRoles(incident *models.IncidentRoles)
     log.Printf("UpdateIncidentRoles: Successfully updated roles for incident ID %d", incident.ID)
     return nil
 }
+
+func (r *incidentRepository) getRelatedData(incident *models.IncidentOutput) error {
+    relatedTables := []struct {
+        query    string
+        dest     interface{}
+    }{
+        {
+            query: `SELECT p.id, p.name 
+                    FROM incident_products ip 
+                    JOIN products p ON ip.product_id = p.id 
+                    WHERE ip.incident_id = $1`,
+            dest: &incident.Products,
+        },
+        {
+            query: `SELECT a.id, a.name 
+                    FROM incident_areas ia 
+                    JOIN areas a ON ia.area_id = a.id 
+                    WHERE ia.incident_id = $1`,
+            dest: &incident.Areas,
+        },
+        {
+            query: `SELECT c.id, c.name 
+                    FROM incident_causes ic 
+                    JOIN causes c ON ic.cause_id = c.id 
+                    WHERE ic.incident_id = $1`,
+            dest: &incident.Causes,
+        },
+        {
+            query: `SELECT fs.id, fs.name 
+                    FROM incident_faulty_systems ifs 
+                    JOIN faulty_systems fs ON ifs.faulty_system_id = fs.id 
+                    WHERE ifs.incident_id = $1`,
+            dest: &incident.FaultySystems,
+        },
+        {
+            query: `SELECT pi.id, pi.name 
+                    FROM incident_performance_indicators ipi 
+                    JOIN performance_indicators pi ON ipi.performance_indicator_id = pi.id 
+                    WHERE ipi.incident_id = $1`,
+            dest: &incident.PerformanceIndicators,
+        },
+    }
+
+    for _, table := range relatedTables {
+        rows, err := r.db.Query(table.query, incident.ID)
+        if err != nil {
+            return fmt.Errorf("error querying related data: %v", err)
+        }
+        defer rows.Close()
+
+        var relatedData []models.RelatedItem
+        for rows.Next() {
+            var item models.RelatedItem
+            if err := rows.Scan(&item.ID, &item.Name); err != nil {
+                return fmt.Errorf("error scanning related data: %v", err)
+            }
+            relatedData = append(relatedData, item)
+        }
+
+        if err = rows.Err(); err != nil {
+            return fmt.Errorf("error after scanning all related data: %v", err)
+        }
+
+        // Use reflection to set the slice field in the struct
+        destValue := reflect.ValueOf(table.dest).Elem()
+        destValue.Set(reflect.ValueOf(relatedData))
+    }
+
+    return nil
+}
+

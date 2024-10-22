@@ -2,6 +2,11 @@ package models
 
 import "time"
 
+type RelatedItem struct {
+    ID   int    `json:"id"`
+    Name string `json:"name"`
+}
+
 type IncidentInput struct {
 	Title           string     `json:"title" db:"title"`
 	Type            int        `json:"type" db:"type"`
@@ -109,9 +114,9 @@ type IncidentOutput struct {
 	DocumentedAt          *time.Time        `json:"documentedAt" db:"documented_at"`
 	ReviewedAt            *time.Time        `json:"reviewedAt" db:"reviewed_at"`
 	Category              *string           `json:"category" db:"category"`
-	Products              map[int]string    `json:"products" db:"-"`
-	Areas                 map[int]string    `json:"areas" db:"-"`
-	Causes                map[int]string    `json:"causes" db:"-"`
-	FaultySystems         map[int]string    `json:"faultySystems" db:"-"`
-	PerformanceIndicators map[int]string    `json:"performanceIndicators" db:"-"`
+	Products              []RelatedItem   `json:"products" db:"-"`
+	Areas                 []RelatedItem    `json:"areas" db:"-"`
+	Causes                []RelatedItem   `json:"causes" db:"-"`
+	FaultySystems         []RelatedItem    `json:"faultySystems" db:"-"`
+	PerformanceIndicators []RelatedItem   `json:"performanceIndicators" db:"-"`
 }

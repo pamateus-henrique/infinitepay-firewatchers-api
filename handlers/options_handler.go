@@ -74,3 +74,23 @@ func (h *OptionsHandler) GetSeverities(c *fiber.Ctx) error {
 		},
 	})
 }
+
+func (h *OptionsHandler) GetProducts(c *fiber.Ctx) error {
+	log.Println("GetProducts: Started processing request")
+
+	products, err := h.optionsService.GetProducts()
+	if err != nil {
+		log.Printf("GetProducts: Error fetching products: %v", err)
+		return fiber.NewError(fiber.StatusInternalServerError, "Error fetching products")
+	}
+
+	log.Printf("GetProducts: Successfully fetched %d products", len(products))
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": false,
+		"msg":   "Fetched products",
+		"data": fiber.Map{
+			"products": products,
+		},
+	})
+}

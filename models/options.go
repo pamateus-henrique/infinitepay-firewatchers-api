@@ -15,4 +15,10 @@ type Severity struct {
 	Name string  `json:"name" db:"name"`
 }
 
+type Product struct {
+	ID   int    `json:"id" db:"id"`
+	Name string `json:"name" db:"name"`
+}
+
+
 

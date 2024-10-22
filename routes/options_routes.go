@@ -14,5 +14,6 @@ func SetupOptionsRoutes(app *fiber.App, services *services.Services) {
     api.Get("/types", optionsHandler.GetTypes)
 	api.Get("/status", optionsHandler.GetStatuses)
 	api.Get("/severity", optionsHandler.GetSeverities)
+	api.Get("/products", optionsHandler.GetProducts)
 
 }

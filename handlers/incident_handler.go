@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -202,6 +203,8 @@ func (h *IncidentHandler) UpdateIncidentRoles(c *fiber.Ctx) error {
 		log.Printf("UpdateIncidentRoles: Error parsing request body: %v", err)
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
 	}
+
+	fmt.Println(incidentRoles)
 
 	if err := h.incidentService.UpdateIncidentRoles(incidentRoles); err != nil {
 		log.Printf("UpdateIncidentRoles: error while updating incident roles: %v", err)
