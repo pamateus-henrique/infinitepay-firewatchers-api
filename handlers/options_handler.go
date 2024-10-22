@@ -94,3 +94,84 @@ func (h *OptionsHandler) GetProducts(c *fiber.Ctx) error {
 		},
 	})
 }
+
+func (h *OptionsHandler) GetAreas(c *fiber.Ctx) error {
+	log.Println("GetAreas: Started processing request")
+
+	areas, err := h.optionsService.GetAreas()
+	if err != nil {
+		log.Printf("GetAreas: Error fetching areas: %v", err)
+		return fiber.NewError(fiber.StatusInternalServerError, "Error fetching areas")
+	}
+
+	log.Printf("GetAreas: Successfully fetched %d areas", len(areas))
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": false,
+		"msg":   "Fetched areas",
+		"data": fiber.Map{
+			"areas": areas,
+		},
+	})
+}
+
+func (h *OptionsHandler) GetPerformanceIndicators(c *fiber.Ctx) error {
+	log.Println("GetPerformanceIndicators: Started processing request")
+
+	indicators, err := h.optionsService.GetPerformanceIndicators()
+	if err != nil {
+		log.Printf("GetPerformanceIndicators: Error fetching performance indicators: %v", err)
+		return fiber.NewError(fiber.StatusInternalServerError, "Error fetching performance indicators")
+	}
+
+	log.Printf("GetPerformanceIndicators: Successfully fetched %d performance indicators", len(indicators))
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": false,
+		"msg":   "Fetched performance indicators",
+		"data": fiber.Map{
+			"performanceIndicators": indicators,
+		},
+	})
+}
+
+func (h *OptionsHandler) GetFaultySystems(c *fiber.Ctx) error {
+	log.Println("GetFaultySystems: Started processing request")
+
+	systems, err := h.optionsService.GetFaultySystems()
+	if err != nil {
+		log.Printf("GetFaultySystems: Error fetching faulty systems: %v", err)
+		return fiber.NewError(fiber.StatusInternalServerError, "Error fetching faulty systems")
+	}
+
+	log.Printf("GetFaultySystems: Successfully fetched %d faulty systems", len(systems))
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": false,
+		"msg":   "Fetched faulty systems",
+		"data": fiber.Map{
+			"faultySystems": systems,
+		},
+	})
+}
+
+
+func (h *OptionsHandler) GetCauses(c *fiber.Ctx) error {
+    log.Println("GetCauses: Started processing request")
+
+    causes, err := h.optionsService.GetCauses()
+    if err != nil {
+        log.Printf("GetCauses: Error fetching causes: %v", err)
+        return fiber.NewError(fiber.StatusInternalServerError, "Error fetching causes")
+    }
+
+    log.Printf("GetCauses: Successfully fetched %d causes", len(causes))
+
+    return c.Status(fiber.StatusOK).JSON(fiber.Map{
+        "error": false,
+        "msg":   "Fetched causes",
+        "data": fiber.Map{
+            "causes": causes,
+        },
+    })
+}

@@ -13,6 +13,10 @@ type OptionsRepository interface {
 	GetStatuses() ([]*models.Status, error)
 	GetSeverities() ([]*models.Severity, error)
 	GetProducts() ([]*models.Product, error)
+	GetAreas() ([]*models.Area, error)
+	GetPerformanceIndicators() ([]*models.PerformanceIndicator, error)
+	GetFaultySystems() ([]*models.FaultySystem, error)
+	GetCauses() ([]*models.Cause, error)
 }
 
 type optionsRepository struct {
@@ -20,7 +24,7 @@ type optionsRepository struct {
 }
 
 func NewOptionsRepository(db *sqlx.DB) OptionsRepository {
-    return &optionsRepository{db: db}
+	return &optionsRepository{db: db}
 }
 
 
@@ -130,4 +134,112 @@ func (r *optionsRepository) GetProducts() ([]*models.Product, error) {
 	}
 
 	return products, nil
+}
+
+func (r *optionsRepository) GetAreas() ([]*models.Area, error) {
+	query := "SELECT id, name FROM areas WHERE active = true"
+
+	rows, err := r.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var areas []*models.Area
+
+	for rows.Next() {
+		var area models.Area
+		if err := rows.StructScan(&area); err != nil {
+			return nil, err
+		}
+		areas = append(areas, &area)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Printf("GetAreas: Error after scanning all rows: %v", err)
+		return nil, err
+	}
+
+	return areas, nil
+}
+
+func (r *optionsRepository) GetPerformanceIndicators() ([]*models.PerformanceIndicator, error) {
+	query := "SELECT id, name FROM performance_indicators WHERE active = true"
+
+	rows, err := r.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var indicators []*models.PerformanceIndicator
+
+	for rows.Next() {
+		var indicator models.PerformanceIndicator
+		if err := rows.StructScan(&indicator); err != nil {
+			return nil, err
+		}
+		indicators = append(indicators, &indicator)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Printf("GetPerformanceIndicators: Error after scanning all rows: %v", err)
+		return nil, err
+	}
+
+	return indicators, nil
+}
+
+func (r *optionsRepository) GetFaultySystems() ([]*models.FaultySystem, error) {
+	query := "SELECT id, name FROM faulty_systems WHERE active = true"
+
+	rows, err := r.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var systems []*models.FaultySystem
+
+	for rows.Next() {
+		var system models.FaultySystem
+		if err := rows.StructScan(&system); err != nil {
+			return nil, err
+		}
+		systems = append(systems, &system)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Printf("GetFaultySystems: Error after scanning all rows: %v", err)
+		return nil, err
+	}
+
+	return systems, nil
+}
+
+func (r *optionsRepository) GetCauses() ([]*models.Cause, error) {
+	query := "SELECT id, name FROM causes WHERE active = true"
+
+	rows, err := r.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var causes []*models.Cause
+
+	for rows.Next() {
+		var cause models.Cause
+		if err := rows.StructScan(&cause); err != nil {
+			return nil, err
+		}
+		causes = append(causes, &cause)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Printf("GetCauses: Error after scanning all rows: %v", err)
+		return nil, err
+	}
+
+	return causes, nil
 }

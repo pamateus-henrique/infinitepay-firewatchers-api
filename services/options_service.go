@@ -11,6 +11,10 @@ type OptionsService interface {
 	GetStatuses() ([]*models.Status, error)
 	GetSeverities() ([]*models.Severity, error)
 	GetProducts() ([]*models.Product, error)
+	GetAreas() ([]*models.Area, error)
+	GetPerformanceIndicators() ([]*models.PerformanceIndicator, error)
+	GetFaultySystems() ([]*models.FaultySystem, error)
+	GetCauses() ([]*models.Cause, error)
 }
 
 type optionsService struct {
@@ -71,4 +75,56 @@ func (s *optionsService) GetProducts() ([]*models.Product, error) {
 
 	log.Printf("GetProducts: Successfully retrieved %d products", len(products))
 	return products, nil
+}
+
+func (s *optionsService) GetAreas() ([]*models.Area, error) {
+	log.Println("GetAreas: Starting areas retrieval process")
+
+	areas, err := s.optionsRepository.GetAreas()
+	if err != nil {
+		log.Printf("GetAreas: Error retrieving areas: %v", err)
+		return nil, err
+	}
+
+	log.Printf("GetAreas: Successfully retrieved %d areas", len(areas))
+	return areas, nil
+}
+
+func (s *optionsService) GetPerformanceIndicators() ([]*models.PerformanceIndicator, error) {
+	log.Println("GetPerformanceIndicators: Starting performance indicators retrieval process")
+
+	indicators, err := s.optionsRepository.GetPerformanceIndicators()
+	if err != nil {
+		log.Printf("GetPerformanceIndicators: Error retrieving performance indicators: %v", err)
+		return nil, err
+	}
+
+	log.Printf("GetPerformanceIndicators: Successfully retrieved %d performance indicators", len(indicators))
+	return indicators, nil
+}
+
+func (s *optionsService) GetFaultySystems() ([]*models.FaultySystem, error) {
+	log.Println("GetFaultySystems: Starting faulty systems retrieval process")
+
+	systems, err := s.optionsRepository.GetFaultySystems()
+	if err != nil {
+		log.Printf("GetFaultySystems: Error retrieving faulty systems: %v", err)
+		return nil, err
+	}
+
+	log.Printf("GetFaultySystems: Successfully retrieved %d faulty systems", len(systems))
+	return systems, nil
+}
+
+func (s *optionsService) GetCauses() ([]*models.Cause, error) {
+	log.Println("GetCauses: Starting causes retrieval process")
+
+	causes, err := s.optionsRepository.GetCauses()
+	if err != nil {
+		log.Printf("GetCauses: Error retrieving causes: %v", err)
+		return nil, err
+	}
+
+	log.Printf("GetCauses: Successfully retrieved %d causes", len(causes))
+	return causes, nil
 }
