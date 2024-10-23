@@ -19,6 +19,7 @@ type IncidentRepository interface {
 	UpdateIncidentSeverity(incident *models.IncidentSeverity) error
 	UpdateIncidentType(incident *models.IncidentType) error
 	UpdateIncidentRoles(incident *models.IncidentRoles) error
+	UpdateIncidentCustomFields(incident *models.IncidentCustomFieldsUpdate) error
 }
 
 type incidentRepository struct {
@@ -474,3 +475,75 @@ func (r *incidentRepository) getRelatedData(incident *models.IncidentOutput) err
     return nil
 }
 
+func (r *incidentRepository) UpdateIncidentCustomFields(incident *models.IncidentCustomFieldsUpdate) error {
+    tx, err := r.db.Beginx()
+    if err != nil {
+        return fmt.Errorf("error starting transaction: %v", err)
+    }
+    defer tx.Rollback()
+
+    // Update fields in the incidents table
+    updateQuery := "UPDATE incidents SET"
+    updateParams := []interface{}{}
+    paramCount := 1
+
+    if incident.Impact != nil {
+        updateQuery += fmt.Sprintf(" impact = $%d,", paramCount)
+        updateParams = append(updateParams, *incident.Impact)
+        paramCount++
+    }
+    if incident.Treatment != nil {
+        updateQuery += fmt.Sprintf(" treatment = $%d,", paramCount)
+        updateParams = append(updateParams, *incident.Treatment)
+        paramCount++
+    }
+    if incident.Mitigator != nil {
+        updateQuery += fmt.Sprintf(" mitigator = $%d,", paramCount)
+        updateParams = append(updateParams, *incident.Mitigator)
+        paramCount++
+    }
+
+    // Remove trailing comma
+    updateQuery = strings.TrimSuffix(updateQuery, ",")
+    updateQuery += fmt.Sprintf(" WHERE id = $%d", paramCount)
+    updateParams = append(updateParams, incident.ID)
+
+    if len(updateParams) > 1 { // Only execute if there are fields to update
+        _, err = tx.Exec(updateQuery, updateParams...)
+        if err != nil {
+            return fmt.Errorf("error updating incident fields: %v", err)
+        }
+    }
+
+    // Update related items
+    relatedItems := []struct {
+        items    []int
+        table    string
+        idColumn string
+    }{
+        {incident.Products, "incident_products", "product_id"},
+        {incident.Areas, "incident_areas", "area_id"},
+        {incident.Causes, "incident_causes", "cause_id"},
+        {incident.FaultySystems, "incident_faulty_systems", "faulty_system_id"},
+        {incident.PerformanceIndicators, "incident_performance_indicators", "performance_indicator_id"},
+    }
+
+    for _, item := range relatedItems {
+            // Delete existing relations
+            _, err = tx.Exec(fmt.Sprintf("DELETE FROM %s WHERE incident_id = $1", item.table), incident.ID)
+            if err != nil {
+                return fmt.Errorf("error deleting existing %s: %v", item.table, err)
+            }
+
+            // Insert new relations
+            insertQuery := fmt.Sprintf("INSERT INTO %s (incident_id, %s) VALUES ($1, $2)", item.table, item.idColumn)
+            for _, id := range item.items {
+                _, err = tx.Exec(insertQuery, incident.ID, id)
+                if err != nil {
+                    return fmt.Errorf("error inserting new %s: %v", item.table, err)
+                }
+            }
+    }
+
+    return tx.Commit()
+}

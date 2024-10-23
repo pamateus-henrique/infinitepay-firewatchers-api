@@ -217,3 +217,25 @@ func (h *IncidentHandler) UpdateIncidentRoles(c *fiber.Ctx) error {
 		"data":  "",
 	})
 }
+
+func (h *IncidentHandler) UpdateIncidentCustomFields(c *fiber.Ctx) error {
+	log.Println("UpdateIncidentCustomFields: Started processing request")
+
+	incidentCustomFields := new(models.IncidentCustomFieldsUpdate)
+
+	if err := c.BodyParser(incidentCustomFields); err != nil {
+		log.Printf("UpdateIncidentCustomFields: Error parsing request body: %v", err)
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
+	}
+
+	if err := h.incidentService.UpdateIncidentCustomFields(incidentCustomFields); err != nil {
+		log.Printf("UpdateIncidentCustomFields: error while updating incident custom fields: %v", err)
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"error": false,
+		"msg":   "Updated incident custom fields",
+		"data":  "",
+	})
+}

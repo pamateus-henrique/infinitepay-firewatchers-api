@@ -17,6 +17,7 @@ type IncidentService interface {
 	UpdateIncidentSeverity(incidentSeverity *models.IncidentSeverity) error
 	UpdateIncidentType(incidentType *models.IncidentType) error
 	UpdateIncidentRoles(incidentRoles *models.IncidentRoles) error
+	UpdateIncidentCustomFields(incident *models.IncidentCustomFieldsUpdate) error
 }
 
 type incidentService struct {
@@ -170,5 +171,23 @@ func (s *incidentService) UpdateIncidentRoles(incidentRoles *models.IncidentRole
 	}
 
 	log.Printf("UpdateIncidentRoles: Successfully updated roles for incident ID %d", incidentRoles.ID)
+	return nil
+}
+
+func (s *incidentService) UpdateIncidentCustomFields(incident *models.IncidentCustomFieldsUpdate) error {
+	log.Printf("UpdateIncidentCustomFields: Starting update process for incident ID %d", incident.ID)
+
+	if err := validators.ValidateStruct(incident); err != nil {
+		log.Printf("UpdateIncidentCustomFields: Validation error: %v", err)
+		return &validators.ValidationError{Err: err}
+	}
+
+	err := s.incidentRepository.UpdateIncidentCustomFields(incident)
+	if err != nil {
+		log.Printf("UpdateIncidentCustomFields: Error updating incident custom fields: %v", err)
+		return err
+	}
+
+	log.Printf("UpdateIncidentCustomFields: Successfully updated custom fields for incident ID %d", incident.ID)
 	return nil
 }

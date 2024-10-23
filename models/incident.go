@@ -50,7 +50,7 @@ type IncidentStatus struct {
 }
 
 type IncidentSeverity struct {
-	ID      int    `json:"id" db:"id"`
+	ID       int    `json:"id" db:"id"`
 	Severity string `json:"severity" db:"severity"`
 }
 
@@ -61,8 +61,8 @@ type IncidentType struct {
 
 type IncidentRoles struct {
 	ID      int		`json:"id" db:"id"`
-	Lead                  *int              `json:"lead" db:"lead"`
-	QE                    *int              `json:"qe" db:"qe"`
+	Lead    *int    `json:"lead" db:"lead"`
+	QE      *int    `json:"qe" db:"qe"`
 }
 
 type IncidentOutput struct {
@@ -114,9 +114,21 @@ type IncidentOutput struct {
 	DocumentedAt          *time.Time        `json:"documentedAt" db:"documented_at"`
 	ReviewedAt            *time.Time        `json:"reviewedAt" db:"reviewed_at"`
 	Category              *string           `json:"category" db:"category"`
-	Products              []RelatedItem   `json:"products" db:"-"`
-	Areas                 []RelatedItem    `json:"areas" db:"-"`
-	Causes                []RelatedItem   `json:"causes" db:"-"`
-	FaultySystems         []RelatedItem    `json:"faultySystems" db:"-"`
-	PerformanceIndicators []RelatedItem   `json:"performanceIndicators" db:"-"`
+	Products              []RelatedItem   	`json:"products" db:"-"`
+	Areas                 []RelatedItem   	`json:"areas" db:"-"`
+	Causes                []RelatedItem   	`json:"causes" db:"-"`
+	FaultySystems         []RelatedItem    	`json:"faultySystems" db:"-"`
+	PerformanceIndicators []RelatedItem  	`json:"performanceIndicators" db:"-"`
+}
+
+type IncidentCustomFieldsUpdate struct {
+	ID                    int               `json:"id" db:"id"`
+	Products              []int             `json:"products,omitempty"`
+	Areas                 []int             `json:"areas,omitempty"`
+	Causes                []int             `json:"causes,omitempty"`
+	FaultySystems         []int             `json:"faultySystems,omitempty"`
+	PerformanceIndicators []int             `json:"performanceIndicators,omitempty"`
+	Impact                *string           `json:"impact,omitempty" db:"impact"`
+	Treatment             *string           `json:"treatment,omitempty" db:"treatment"`
+	Mitigator             *string           `json:"mitigator,omitempty" db:"mitigator"`
 }
