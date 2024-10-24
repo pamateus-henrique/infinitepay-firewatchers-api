@@ -19,4 +19,5 @@ func SetupOptionsRoutes(app *fiber.App, services *services.Services) {
 	api.Get("/performance-indicators", optionsHandler.GetPerformanceIndicators)
 	api.Get("/faulty-systems", optionsHandler.GetFaultySystems)
 	api.Get("/causes", optionsHandler.GetCauses)
+	api.Get("/sources", optionsHandler.GetSources)
 }

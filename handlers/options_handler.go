@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/pamateus-henrique/infinitepay-firewatchers-api/models"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/services"
 )
 
@@ -172,6 +173,23 @@ func (h *OptionsHandler) GetCauses(c *fiber.Ctx) error {
         "msg":   "Fetched causes",
         "data": fiber.Map{
             "causes": causes,
+        },
+    })
+}
+
+
+//remove this later on
+func (h *OptionsHandler) GetSources(c *fiber.Ctx) error {
+    sources := []models.Source{
+        {ID: 1, Name: "Internal"},
+        {ID: 2, Name: "External"},
+    }
+
+    return c.Status(fiber.StatusOK).JSON(fiber.Map{
+        "error": false,
+        "msg":   "Fetched sources",
+        "data": fiber.Map{
+            "source": sources,
         },
     })
 }

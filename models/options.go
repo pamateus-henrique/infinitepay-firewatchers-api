@@ -40,6 +40,11 @@ type Cause struct {
 	Name string `json:"name" db:"name"`
 }
 
+type Source struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 
 
 
