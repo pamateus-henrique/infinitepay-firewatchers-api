@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/handlers"
-
+	"github.com/pamateus-henrique/infinitepay-firewatchers-api/middlewares"
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/services"
 )
 
@@ -20,5 +20,6 @@ func SetupIncidentRoutes(app *fiber.App, services *services.Services) {
 	api.Post("/update/roles", incidentHandler.UpdateIncidentRoles)
 	api.Get("/", incidentHandler.GetIncidents)
 	api.Get("/:id", incidentHandler.GetSingleIncident)
+	api.Use(middlewares.JWTMiddleware())
 	api.Post("/custom-fields", incidentHandler.UpdateIncidentCustomFields)
 }

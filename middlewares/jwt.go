@@ -10,16 +10,18 @@ import (
 
 func JWTMiddleware() fiber.Handler {
     cfg := config.GetConfig()
+
     return jwtware.New(jwtware.Config{
         SigningKey:   []byte(cfg.JWTSecret),
         ContextKey:   "jwt",
         ErrorHandler: jwtError,
+        TokenLookup:  "cookie:jwt,header:Authorization",
     })
 }
 
 func jwtError(c *fiber.Ctx, err error) error {
     if err.Error() == "Missing or malformed JWT" {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
             "error": "Missing or malformed JWT",
         })
     }

@@ -2,6 +2,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/models"
@@ -70,18 +71,11 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 
     log.Println("Login: JWT generated successfully")
 
-    // Create cookie
-    cookie := new(fiber.Cookie)
-    cookie.Name = "jwt"
-    cookie.Value = jwt
-    cookie.HTTPOnly = true
-    cookie.Secure = false  // Set to true if using HTTPS
-    cookie.SameSite = "Lax"
-    cookie.MaxAge = 3600 * 24  // 24 hours
-    cookie.Path = "/"
-    c.Cookie(cookie)
+    // Create Set-Cookie header
+    cookieValue := fmt.Sprintf("jwt=%s; HttpOnly; Path=/; Max-Age=%d; SameSite=Lax", jwt, 3600*24)
+    c.Set("Set-Cookie", cookieValue)
 
-    log.Println("Login: Cookie set successfully")
+    log.Println("Login: Set-Cookie header set successfully")
 
     return c.Status(fiber.StatusOK).JSON(fiber.Map{
         "error": false,
