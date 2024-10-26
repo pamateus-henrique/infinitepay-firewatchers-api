@@ -63,7 +63,8 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 
     log.Printf("Login: User logged in successfully: %s", user.Name)
 
-    jwt, err := utils.GenerateJWT(user.Name)
+
+    jwt, err := utils.GenerateJWT(user.Name, user.ID)
     if err != nil {
         log.Printf("Login: Error generating JWT: %v", err)
         return fiber.NewError(fiber.StatusInternalServerError)

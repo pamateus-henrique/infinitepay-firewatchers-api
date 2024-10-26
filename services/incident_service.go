@@ -1,6 +1,8 @@
 package services
 
 import (
+	"context"
+	"fmt"
 	"log"
 
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/models"
@@ -9,7 +11,7 @@ import (
 )
 
 type IncidentService interface {
-	CreateIncident(incidentInput *models.IncidentInput) (int, error)
+	CreateIncident(ctx context.Context, incidentInput *models.IncidentInput) (int, error)
 	GetIncidents(queryParams *models.IncidentQueryParams) ([]*models.IncidentOverviewOutput, error)
 	GetSingleIncident(incidentID int) (*models.IncidentOutput, error)
 	UpdateIncidentSummary(incidentSummary *models.IncidentSummary) error
@@ -28,13 +30,18 @@ func NewIncidentService(incidentRepository repositories.IncidentRepository) Inci
 	return &incidentService{incidentRepository: incidentRepository}
 }
 
-func (s *incidentService) CreateIncident(incidentInput *models.IncidentInput) (int, error) {
+func (s *incidentService) CreateIncident(ctx context.Context, incidentInput *models.IncidentInput) (int, error) {
+	userID := ctx.Value("user_id").(int)
+	fmt.Println("testing")
+	fmt.Println(userID)
 	log.Println("CreateIncident: Starting incident creation process")
 
 	if err := validators.ValidateStruct(incidentInput); err != nil {
 		log.Printf("CreateIncident: Validation error: %v", err)
 		return 0, &validators.ValidationError{Err: err}
 	}
+
+	incidentInput.Reporter = userID
 
 	log.Println("CreateIncident: Validation passed, creating incident")
 	incidentID, err := s.incidentRepository.CreateIncident(incidentInput)

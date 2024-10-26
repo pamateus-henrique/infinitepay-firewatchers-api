@@ -18,18 +18,14 @@ func NewIncidentHandler(incidentService services.IncidentService) *IncidentHandl
 }
 
 func (h *IncidentHandler) CreateIncident(c *fiber.Ctx) error {
-	log.Println("CreateIncident: Started processing request")
 	
 	incidentInputModel := new(models.IncidentInput)
-
 	if err := c.BodyParser(incidentInputModel); err != nil {
 		log.Printf("CreateIncident: Error parsing request body: %v", err)
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")
 	}
 
-	log.Printf("CreateIncident: Parsed input model: %+v", incidentInputModel)
-
-	incidentID, err := h.incidentService.CreateIncident(incidentInputModel)
+	incidentID, err := h.incidentService.CreateIncident(c.Context(), incidentInputModel)
 
 	if err != nil {
 		log.Printf("CreateIncident: Error creating incident: %v", err)
@@ -56,8 +52,6 @@ func (h *IncidentHandler) GetIncidents(c *fiber.Ctx) error {
 		log.Printf("GetIncidents: Error parsing query parameters: %v", err)
 		return fiber.NewError(fiber.StatusBadRequest, "invalid input format")
 	}
-
-	log.Printf("GetIncidents: Parsed query parameters: %+v", params)
 
 	incidents, err := h.incidentService.GetIncidents(params)
 	

@@ -42,7 +42,7 @@ func (r *userRepository) GetUserByEmail(email string) (*models.User, error) {
 	log.Printf("GetUserByEmail: Retrieving user with email: %s", email)
 	
 	user := models.User{}
-	query := `SELECT name, email, password, team, role, avatar_url FROM users where email = $1`
+	query := `SELECT id, name, email, password, team, role, avatar_url FROM users where email = $1`
 
 	log.Println("GetUserByEmail: Executing query")
 	err := r.db.Get(&user, query, email)

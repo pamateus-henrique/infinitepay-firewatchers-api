@@ -51,14 +51,16 @@ func (r *incidentRepository) CreateIncident(incident *models.IncidentInput) (int
 		}
 	}()
 
-	fields := []string{"title", "type", "severity", "summary"}
-	placeholders := []string{":title", ":type", ":severity", ":summary"}
+	fields := []string{"title", "type", "severity", "summary", "reporter", "status"}
+	placeholders := []string{":title", ":type", ":severity", ":summary", ":reporter", ":status"}
 
 	params := map[string]interface{}{
 		"title": incident.Title,
 		"type": incident.Type,
 		"severity": incident.Severity,
 		"summary": incident.Summary,
+        "reporter": incident.Reporter,
+        "status": incident.Status,
 	}
 
 
@@ -67,6 +69,12 @@ func (r *incidentRepository) CreateIncident(incident *models.IncidentInput) (int
 		placeholders = append(placeholders, ":impact")
 		params["impact"] = *incident.Impact
 	}
+
+    if incident.Lead != nil {
+        fields = append(fields, "lead")
+        placeholders = append(placeholders, ":lead")
+        params["lead"] = *incident.Lead
+    }
 
 	if incident.Source != nil {
 		fields = append(fields, "source")

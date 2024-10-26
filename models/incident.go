@@ -13,6 +13,7 @@ type IncidentInput struct {
 	Severity        string     	`json:"severity" db:"severity"`
 	Summary         string     	`json:"summary" db:"summary"`
 	Status 			string		`json:"status" db:"status"`
+	Reporter		int			`db:"reporter"`
 	Impact          *string    	`json:"impact,omitempty" db:"impact"`
 	Source          *string    	`json:"source,omitempty" db:"incident_source"`
 	Lead            *int        `json:"lead" db:"lead"`
