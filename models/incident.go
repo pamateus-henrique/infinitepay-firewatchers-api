@@ -20,8 +20,9 @@ type IncidentInput struct {
 	Products        []int      	`json:"products,omitempty" db:"product_id"`
 	Areas           []int      	`json:"areas,omitempty" db:"area_id"`
 	Indicators      []int      	`json:"indicators,omitempty" db:"indicator_id"`
-	ImpactStartedAt *time.Time 	`json:"started_at" db:"impact_started_at"`
+	ImpactStartedAt *CustomTime 	`json:"impactStartedAt" db:"impact_started_at"`
 	SlackThread     *string    	`json:"slack_thread,omitempty" db:"slack_thread"`
+	ReportedAt		*CustomTime `db:"reported_at"`
 }
 
 type IncidentQueryParams struct {
@@ -87,35 +88,35 @@ type IncidentOutput struct {
 	Severity              string            `json:"severity" db:"severity"`
 	Impact                *string           `json:"impact" db:"impact"`
 	PostMortem            *string           `json:"postMortem" db:"post_mortem"`
-	ImpactStartedAt       *time.Time        `json:"impactStartedAt" db:"impact_started_at"`
-	ImpactStoppedAt       *time.Time        `json:"impactStoppedAt" db:"impact_stopped_at"`
-	ReportedAt            *time.Time        `json:"reportedAt" db:"reported_at"`
-	IdentifiedAt          *time.Time        `json:"identifiedAt" db:"identified_at"`
-	FixedAt               *time.Time        `json:"fixedAt" db:"fixed_at"`
-	ResolvedAt            *time.Time        `json:"resolvedAt" db:"resolved_at"`
-	DocumentationAt       *time.Time        `json:"documentationAt" db:"documentation_at"`
-	InReviewAt            *time.Time        `json:"inReviewAt" db:"in_review_at"`
-	ClosedAt              *time.Time        `json:"closedAt" db:"closed_at"`
-	AcceptedAt            *time.Time        `json:"acceptedAt" db:"accepted_at"`
-	DeclinedAt            *time.Time        `json:"declinedAt" db:"declined_at"`
-	MergedAt              *time.Time        `json:"mergedAt" db:"merged_at"`
-	CanceledAt            *time.Time        `json:"canceledAt" db:"canceled_at"`
-	TriagedBy             *time.Time        `json:"triagedBy" db:"triaged_by"`
+	ImpactStartedAt       *CustomTime        `json:"impactStartedAt" db:"impact_started_at"`
+	ImpactStoppedAt       *CustomTime        `json:"impactStoppedAt" db:"impact_stopped_at"`
+	ReportedAt            *CustomTime        `json:"reportedAt" db:"reported_at"`
+	IdentifiedAt          *CustomTime        `json:"identifiedAt" db:"identified_at"`
+	FixedAt               *CustomTime        `json:"fixedAt" db:"fixed_at"`
+	ResolvedAt            *CustomTime        `json:"resolvedAt" db:"resolved_at"`
+	DocumentationAt       *CustomTime        `json:"documentationAt" db:"documentation_at"`
+	InReviewAt            *CustomTime        `json:"inReviewAt" db:"in_review_at"`
+	ClosedAt              *CustomTime        `json:"closedAt" db:"closed_at"`
+	AcceptedAt            *CustomTime        `json:"acceptedAt" db:"accepted_at"`
+	DeclinedAt            *CustomTime        `json:"declinedAt" db:"declined_at"`
+	MergedAt              *CustomTime        `json:"mergedAt" db:"merged_at"`
+	CanceledAt            *CustomTime        `json:"canceledAt" db:"canceled_at"`
+	TriagedBy             *CustomTime        `json:"triagedBy" db:"triaged_by"`
 	Treatment             *string           `json:"treatment" db:"treatment"`
 	Mitigator             *string           `json:"mitigator" db:"mitigator"`
 	SlackChannel          *string           `json:"slackChannel" db:"slack_channel"`
 	RelatedIncident       *int              `json:"relatedIncident" db:"related_incident"`
 	IncidentSource        *string           `json:"incidentSource" db:"incident_source"`
 	ThreadOnSlack         *string           `json:"threadOnSlack" db:"thread_on_slack"`
-	CleanedUpAt           *time.Time        `json:"cleanedUpAt" db:"cleaned_up_at"`
-	MonitoredAt           *time.Time        `json:"monitoredAt" db:"monitored_at"`
-	InvestigatingAt       *time.Time        `json:"investigatingAt" db:"investigating_at"`
-	FixingAt              *time.Time        `json:"fixingAt" db:"fixing_at"`
-	MonitoringAt          *time.Time        `json:"monitoringAt" db:"monitoring_at"`
-	CleaningUpAt          *time.Time        `json:"cleaningUpAt" db:"cleaning_up_at"`
+	CleanedUpAt           *CustomTime        `json:"cleanedUpAt" db:"cleaned_up_at"`
+	MonitoredAt           *CustomTime        `json:"monitoredAt" db:"monitored_at"`
+	InvestigatingAt       *CustomTime        `json:"investigatingAt" db:"investigating_at"`
+	FixingAt              *CustomTime        `json:"fixingAt" db:"fixing_at"`
+	MonitoringAt          *CustomTime        `json:"monitoringAt" db:"monitoring_at"`
+	CleaningUpAt          *CustomTime        `json:"cleaningUpAt" db:"cleaning_up_at"`
 	PostToStatusPage      *bool             `json:"postToStatusPage" db:"post_to_status_page"`
-	DocumentedAt          *time.Time        `json:"documentedAt" db:"documented_at"`
-	ReviewedAt            *time.Time        `json:"reviewedAt" db:"reviewed_at"`
+	DocumentedAt          *CustomTime        `json:"documentedAt" db:"documented_at"`
+	ReviewedAt            *CustomTime        `json:"reviewedAt" db:"reviewed_at"`
 	Category              *string           `json:"category" db:"category"`
 	Products              []RelatedItem   	`json:"products" db:"-"`
 	Areas                 []RelatedItem   	`json:"areas" db:"-"`

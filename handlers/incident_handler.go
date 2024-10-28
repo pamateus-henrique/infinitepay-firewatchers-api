@@ -20,6 +20,7 @@ func NewIncidentHandler(incidentService services.IncidentService) *IncidentHandl
 func (h *IncidentHandler) CreateIncident(c *fiber.Ctx) error {
 	
 	incidentInputModel := new(models.IncidentInput)
+
 	if err := c.BodyParser(incidentInputModel); err != nil {
 		log.Printf("CreateIncident: Error parsing request body: %v", err)
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid input format")

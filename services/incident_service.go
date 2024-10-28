@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/pamateus-henrique/infinitepay-firewatchers-api/models"
@@ -32,8 +31,7 @@ func NewIncidentService(incidentRepository repositories.IncidentRepository) Inci
 
 func (s *incidentService) CreateIncident(ctx context.Context, incidentInput *models.IncidentInput) (int, error) {
 	userID := ctx.Value("user_id").(int)
-	fmt.Println("testing")
-	fmt.Println(userID)
+
 	log.Println("CreateIncident: Starting incident creation process")
 
 	if err := validators.ValidateStruct(incidentInput); err != nil {
@@ -41,7 +39,10 @@ func (s *incidentService) CreateIncident(ctx context.Context, incidentInput *mod
 		return 0, &validators.ValidationError{Err: err}
 	}
 
+	//adding auto filled data
 	incidentInput.Reporter = userID
+	incidentInput.ReportedAt = models.NewCustomTimeNow()
+
 
 	log.Println("CreateIncident: Validation passed, creating incident")
 	incidentID, err := s.incidentRepository.CreateIncident(incidentInput)
@@ -111,6 +112,8 @@ func (s *incidentService) UpdateIncidentSummary(incidentSummary *models.Incident
 
 func (s *incidentService) UpdateIncidentStatus(IncidentStatus *models.IncidentStatus) error {
 	log.Printf("UpdateIncidentStatus: Starting update process for incident ID %d", IncidentStatus.ID)
+
+
 
 	if err := validators.ValidateStruct(IncidentStatus); err != nil {
 		log.Printf("UpdateIncidentStatus: Validation error: %v", err)
